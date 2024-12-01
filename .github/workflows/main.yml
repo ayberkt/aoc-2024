@@ -4,7 +4,9 @@ name: build
 
 jobs:
   runalldays:
-    runs-on: 9.10.1-bullseye
+    runs-on: ubuntu-latest
+    container:
+      image: 9.10.1-bullseye
     name: Run all solutions
 
     steps:
