@@ -6,7 +6,6 @@ jobs:
   runalldays:
     name: Run all solutions
     runs-on: ubuntu-latest
-    container:
 
     steps:
     - name: "Clone repository"
