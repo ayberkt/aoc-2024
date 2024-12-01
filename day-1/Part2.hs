@@ -1,20 +1,15 @@
-module Part1 where
+module Part2 where
 
 import Data.List
-
 import System.IO
 
-parseInts :: String -> (Int, Int)
-parseInts line = let [s, t] = words line in (read s, read t)
+import Part1
 
-parse :: String -> [(Int, Int)]
-parse s = parseInts <$> lines s
-
-foo :: Int -> [Int] -> Int
-foo m ns = m * length (filter (== m) ns)
+alpha :: Int -> [Int] -> Int
+alpha m ns = m * length (filter (== m) ns)
 
 result :: [(Int, Int)] -> Int
-result ps = sum $ flip foo ys <$> (fst <$> ps)
+result ps = sum $ flip alpha ys <$> (fst <$> ps)
   where
     ys :: [Int]
     ys = snd <$> ps
