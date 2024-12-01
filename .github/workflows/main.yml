@@ -1,0 +1,17 @@
+on: [push]
+
+name: build
+
+jobs:
+  runalldays:
+    runs-on: 9.10.1-bullseye
+    name: Run all solutions
+
+    steps:
+    - name: "Clone repository"
+      uses: actions/checkout@v4
+
+    - name: "Run Day 1"
+      run: |
+        cd day-1
+        runhaskell Part1.hs
