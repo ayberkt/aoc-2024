@@ -26,5 +26,5 @@ main :: IO ()
 main = do
   handle  <- openFile "input.txt" ReadMode
   content <- hGetContents handle
-  putStrLn $ "Total distance: " ++  show (totalDistance (parse content))
+  print $ totalDistance (parse content)
   hClose handle
