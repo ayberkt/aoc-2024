@@ -3,7 +3,7 @@ module Part2 where
 import Data.List
 import System.IO
 
-import Part1
+import Part1 hiding (main)
 
 alpha :: Int -> [Int] -> Int
 alpha m ns = m * length (filter (== m) ns)
