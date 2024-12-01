@@ -11,8 +11,10 @@ jobs:
     - name: "Clone repository"
       uses: actions/checkout@v4
 
-    - name: "Run Day 1"
+    - name: "Setup Haskell"
       uses: haskell-actions/setup@v2
+
+    - name: "Run Day 1"
       run: |
         cd day-1
         runhaskell Part1.hs
