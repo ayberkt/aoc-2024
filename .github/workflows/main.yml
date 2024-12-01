@@ -6,7 +6,7 @@ jobs:
   runalldays:
     runs-on: ubuntu-latest
     container:
-      image: 9.10.1-bullseye
+      image: haskell-9.10.1-bullseye
     name: Run all solutions
 
     steps:
