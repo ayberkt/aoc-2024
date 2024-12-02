@@ -1,20 +1,16 @@
-module Part1 where
+module Part2 where
 
 import Data.List
 import Data.String
 import System.IO
 
+import qualified Part1
+
+deleteAt :: Int -> [a] -> [a]
+deleteAt i ns = let (xs, ys) = splitAt (i+1) ns in init xs ++ ys
+
 isSafe :: [Int] -> Bool
-isSafe ns = (cond1 || cond2) && all (\x -> x >= 1 && x <= 3) (abs <$> ds)
-  where
-    ds :: [Int]
-    ds = [ (n - m) | (m, n) <- zip ns (tail ns)]
-
-    cond1 :: Bool
-    cond1 = all (> 0) ds
-
-    cond2 :: Bool
-    cond2 = all (< 0) ds
+isSafe ns = any Part1.isSafe [ deleteAt i ns | i <- [0..length ns-1] ]
 
 solution :: [String] -> Int
 solution ls = length $ filter isSafe reports
