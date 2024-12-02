@@ -19,3 +19,9 @@ jobs:
         cd day-1
         time runhaskell Part1.hs
         time runhaskell Part2.hs
+
+    - name: "Run Day 2"
+      run: |
+        cd day-2
+        time runhaskell Part1.hs
+        time runhaskell Part2.hs
