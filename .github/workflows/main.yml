@@ -29,5 +29,6 @@ jobs:
     - name: "Run Day 3"
       run: |
         cd day-3
+        cabal install --lib regex-tdfa
         time runhaskell Part1.hs
         time runhaskell Part2.hs
