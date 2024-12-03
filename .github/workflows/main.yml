@@ -14,6 +14,9 @@ jobs:
     - name: "Setup Haskell"
       uses: haskell-actions/setup@v2
 
+    - name: "Install regex-tdfa"
+      run: cabal install --lib regex-tdfa
+
     - name: "Run Day 1"
       run: |
         cd day-1
@@ -29,6 +32,5 @@ jobs:
     - name: "Run Day 3"
       run: |
         cd day-3
-        cabal install --lib regex-tdfa
         time runhaskell Part1.hs
         time runhaskell Part2.hs
