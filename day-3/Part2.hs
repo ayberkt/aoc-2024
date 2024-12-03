@@ -6,7 +6,6 @@ import System.IO
 import Text.Regex.TDFA
 import Data.Char (isSpace)
 
-
 import qualified Part1
 
 mulRegex :: String
@@ -26,7 +25,6 @@ solution ls = sum $ Part1.calculate <$> mulss
   where
     mulss :: [String]
     mulss = evaluate (getInstructions ls) True
-
 
 main :: IO ()
 main = do
