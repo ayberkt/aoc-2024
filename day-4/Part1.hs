@@ -9,15 +9,18 @@ import Data.Maybe
 allCoordinates :: Int -> Int -> [(Int, Int)]
 allCoordinates w h = ((,) <$> [0..h-1]) <*> [0..w-1]
 
+steps :: [Int]
+steps = [0..3]
+
 walkEast      :: Int -> Int -> [(Int, Int)]
 walkSouth     :: Int -> Int -> [(Int, Int)]
 walkSouthEast :: Int -> Int -> [(Int, Int)]
 walkSouthWest :: Int -> Int -> [(Int, Int)]
 
-walkEast      i j = [ (i,   j+k) | k <- [0..3] ]
-walkSouth     i j = [ (i+k, j)   | k <- [0..3] ]
-walkSouthEast i j = [ (i+k, j+k) | k <- [0..3] ]
-walkSouthWest i j = [ (i+k, j-k) | k <- [0..3] ]
+walkEast      i j = [ (i,   j+k) | k <- steps ]
+walkSouth     i j = [ (i+k, j)   | k <- steps ]
+walkSouthEast i j = [ (i+k, j+k) | k <- steps ]
+walkSouthWest i j = [ (i+k, j-k) | k <- steps ]
 
 walks :: [Int -> Int -> [(Int, Int)]]
 walks = [walkEast, walkSouth, walkSouthEast, walkSouthWest]
