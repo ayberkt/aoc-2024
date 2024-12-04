@@ -20,23 +20,23 @@ jobs:
     - name: "Run Day 1"
       run: |
         cd day-1
-        time runhaskell Part1.hs
-        time runhaskell Part2.hs
+        time runhaskell -w Part1.hs
+        time runhaskell -w Part2.hs
 
     - name: "Run Day 2"
       run: |
         cd day-2
-        time runhaskell Part1.hs
-        time runhaskell Part2.hs
+        time runhaskell -w Part1.hs
+        time runhaskell -w Part2.hs
 
     - name: "Run Day 3"
       run: |
         cd day-3
-        time runhaskell Part1.hs
-        time runhaskell Part2.hs
+        time runhaskell -w Part1.hs
+        time runhaskell -w Part2.hs
 
     - name: "Run Day 4"
       run: |
         cd day-4
-        time runhaskell Part1.hs
-        time runhaskell Part2.hs
+        time runhaskell -w Part1.hs
+        time runhaskell -w Part2.hs
