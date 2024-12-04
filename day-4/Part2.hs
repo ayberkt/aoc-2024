@@ -7,7 +7,7 @@ import Data.Char (isSpace)
 import Data.Maybe
 
 allCoordinates :: Int -> Int -> [(Int, Int)]
-allCoordinates w h = ((,) <$> [0..h-1]) <*> [0..w-1]
+allCoordinates w h = (,) <$> [0..h-1] <*> [0..w-1]
 
 -- Northeast character and southwest character.
 diag1 :: Int -> Int -> ((Int, Int), (Int, Int))
