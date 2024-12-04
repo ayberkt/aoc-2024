@@ -6,8 +6,7 @@ import System.IO
 import Data.Char (isSpace)
 import Data.Maybe
 
-allCoordinates :: Int -> Int -> [(Int, Int)]
-allCoordinates w h = (,) <$> [0..h-1] <*> [0..w-1]
+import qualified Part1
 
 -- Northeast character and southwest character.
 diag1 :: Int -> Int -> ((Int, Int), (Int, Int))
@@ -60,7 +59,7 @@ solution grid = length $ filter beta coords
     height = length grid
 
     coords :: [(Int, Int)]
-    coords = allCoordinates width height
+    coords = Part1.allCoordinates width height
 
 main :: IO ()
 main = do
