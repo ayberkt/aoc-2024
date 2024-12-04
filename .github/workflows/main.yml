@@ -39,3 +39,4 @@ jobs:
       run: |
         cd day-4
         time runhaskell Part1.hs
+        time runhaskell Part2.hs
