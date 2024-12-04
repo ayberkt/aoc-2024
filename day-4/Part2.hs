@@ -48,10 +48,8 @@ isXMAS grid (i, j) = fromMaybe False result
                 return $ r && (l == 'A')
 
 solution :: [String] -> Int
-solution grid = length $ filter beta coords
+solution grid = length $ filter (isXMAS grid) coords
   where
-    beta = isXMAS grid
-
     width :: Int
     width = length (head grid)
 
