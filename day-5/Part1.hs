@@ -1,10 +1,10 @@
 module Part1 where
 
-import Data.Char (isSpace)
-import Data.List
-import Data.Maybe
-import Data.String
-import System.IO
+import Data.Char   (isSpace)
+import Data.List   ()
+import Data.Maybe  ()
+import Data.String ()
+import System.IO   (hClose, hGetContents, openFile, IOMode(ReadMode))
 
 parseRule :: String -> (Int, Int)
 parseRule s = (read $ takeWhile (/= '|') s, read $ tail $ dropWhile (/= '|') s)

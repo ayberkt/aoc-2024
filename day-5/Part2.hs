@@ -1,10 +1,10 @@
 module Part2 where
 
-import Data.Char (isSpace)
-import Data.List
-import Data.Maybe
-import Data.String
-import System.IO
+import Data.Char   (isSpace)
+import Data.List   (sortBy)
+import Data.Maybe  ()
+import Data.String ()
+import System.IO   (hClose, hGetContents, openFile, IOMode(ReadMode))
 
 import qualified Part1
 
