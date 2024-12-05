@@ -40,3 +40,9 @@ jobs:
         cd day-4
         time runhaskell -w Part1.hs
         time runhaskell -w Part2.hs
+
+    - name: "Run Day 5"
+      run: |
+        cd day-5
+        time runhaskell -w Part1.hs
+        time runhaskell -w Part2.hs
