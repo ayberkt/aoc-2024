@@ -9,7 +9,7 @@ import Data.String
 import System.IO   (hClose, hGetContents, openFile, IOMode(ReadMode))
 import Data.Array (Array)
 
-type Grid = IOArray (Int, Int) Char
+type Grid = IOUArray (Int, Int) Char
 
 northCell :: (Int, Int) -> (Int, Int)
 eastCell  :: (Int, Int) -> (Int, Int)
