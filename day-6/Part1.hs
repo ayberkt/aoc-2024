@@ -1,10 +1,15 @@
 module Part1 where
 
+import Data.Array.IO
+
 import Data.Char
 import Data.List
 import Data.Maybe
 import Data.String
 import System.IO   (hClose, hGetContents, openFile, IOMode(ReadMode))
+import Data.Array (Array)
+
+type Grid = IOArray (Int, Int) Char
 
 northCell :: (Int, Int) -> (Int, Int)
 eastCell  :: (Int, Int) -> (Int, Int)
@@ -29,99 +34,112 @@ getGuard c | '^' == c  = Just c
 isGuard :: Char -> Bool
 isGuard c = isJust $ getGuard c
 
-index :: (Int, Int) -> [[Char]] -> Maybe Char
-index (i, j) grid = if i >= 0 && i < height && j >= 0 && j <  width then
-                      Just $ grid !! i !! j
-                   else
-                     Nothing
-  where
-    height = length grid
-    width  = length $ head grid
+indexGrid :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe Char)
+indexGrid h w (i, j) grid = do
+  if i >= 0 && i < h && j >= 0 && j < w then do
+    c <- readArray grid (i, j)
+    return $ Just c
+  else
+    return Nothing
 
-placeAt :: a -> Int -> [a] -> [a]
-placeAt x i xs = let (ys, zs) = splitAt i xs in ys ++ x:tail zs
+update :: (Int, Int) -> Char -> Grid -> IO ()
+update (i, j) c grid = writeArray grid (i, j) c
 
-update :: (Int, Int) -> Char -> [[Char]] -> [[Char]]
-update (i, j) c grid = placeAt line' i grid
-  where
-    line :: String
-    line = grid !! i
-
-    line' :: String
-    line' = placeAt c j line
-
-stepNorthCase :: (Int, Int) -> [[Char]] -> Maybe [[Char]]
-stepNorthCase (i, j) grid =
-  case northCell (i, j) `index` grid of
-    Just '.' -> Just $ update (northCell (i, j)) '^' $ update (i, j) 'X' grid
-    Just 'X' -> Just $ update (northCell (i, j)) '^' $ update (i, j) 'X' grid
-    Just '#' -> Just $ update (i, j) '>' grid
-    Nothing  -> Nothing
+stepNorthCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
+stepNorthCase h w (i, j) grid = do
+  let nc = northCell (i, j)
+  result <- indexGrid h w nc grid
+  case result of
+    Just '.' -> do { update nc '^' grid; update (i, j) 'X' grid; return $ Just nc }
+    Just 'X' -> do { update nc '^' grid; update (i, j) 'X' grid; return $ Just nc }
+    Just '#' -> do { update (i, j) '>' grid; return $ Just (i, j) }
+    Nothing  -> return Nothing
     _        -> undefined
 
-stepEastCase :: (Int, Int) -> [[Char]] -> Maybe [[Char]]
-stepEastCase (i, j) grid =
-  case eastCell (i, j) `index` grid of
-    Just '.' -> Just $ update (eastCell (i, j)) '>' $ update (i, j) 'X' grid
-    Just 'X' -> Just $ update (eastCell (i, j)) '>' $ update (i, j) 'X' grid
-    Just '#' -> Just $ update (i, j) 'v' grid
-    Nothing  -> Nothing
+stepEastCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
+stepEastCase h w (i, j) grid = do
+  let nc = eastCell (i, j)
+  result <- indexGrid h w nc grid
+  case result of
+    Just '.' -> do { update nc '>' grid; update (i, j) 'X' grid; return $ Just nc }
+    Just 'X' -> do { update nc '>' grid; update (i, j) 'X' grid; return $ Just nc }
+    Just '#' -> do { update (i, j) 'v' grid; return $ Just (i, j) }
+    Nothing  -> return Nothing
     _        -> undefined
 
-stepSouthCase :: (Int, Int) -> [[Char]] -> Maybe [[Char]]
-stepSouthCase (i, j) grid =
-  case southCell (i, j) `index` grid of
-    Just '.' -> Just $ update (southCell (i, j)) 'v' $ update (i, j) 'X' grid
-    Just 'X' -> Just $ update (southCell (i, j)) 'v' $ update (i, j) 'X' grid
-    Just '#' -> Just $ update (i, j) '<' grid
-    Nothing  -> Nothing
+stepSouthCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
+stepSouthCase h w (i, j) grid = do
+  let nc = southCell (i, j)
+  result <- indexGrid h w nc grid
+  case result of
+    Just '.' -> do { update nc 'v' grid; update (i, j) 'X' grid; return (Just nc) }
+    Just 'X' -> do { update nc 'v' grid; update (i, j) 'X' grid; return (Just nc) }
+    Just '#' -> do { update (i, j) '<' grid; return (Just (i, j)) }
+    Nothing  -> return Nothing
     _        -> undefined
 
-stepWestCase :: (Int, Int) -> [[Char]] -> Maybe [[Char]]
-stepWestCase (i, j) grid =
-  case westCell (i, j) `index` grid of
-    Just '.' -> Just $ update (westCell (i, j)) '<' $ update (i, j) 'X' grid
-    Just 'X' -> Just $ update (westCell (i, j)) '<' $ update (i, j) 'X' grid
-    Just '#' -> Just $ update (i, j) '^' grid
-    Nothing  -> Nothing
+stepWestCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
+stepWestCase h w (i, j) grid = do
+  let nc = westCell (i, j)
+  result <- indexGrid h w (westCell (i, j)) grid
+  case result of
+    Just '.' -> do { update nc '<' grid; update (i, j) 'X' grid; return (Just nc) }
+    Just 'X' -> do { update nc '<' grid; update (i, j) 'X' grid; return (Just nc) }
+    Just '#' -> do { update (i, j) '^' grid; return $ Just (i, j) }
+    Nothing  -> return Nothing
     _        -> undefined
 
-step :: [[Char]] -> Maybe [[Char]]
-step grid =
-  case guard of
-    '^' -> stepNorthCase (gi, gj) grid
-    '>' -> stepEastCase  (gi, gj) grid
-    'v' -> stepSouthCase (gi, gj) grid
-    '<' -> stepWestCase  (gi, gj) grid
+step :: Int -> Int -> Int -> Int -> Grid -> IO (Maybe (Int, Int))
+step gi gj h w grid = do
+  r <- indexGrid h w (gi, gj) grid
+  case r of
+    Just '^' -> stepNorthCase h w (gi, gj) grid
+    Just '>' -> stepEastCase  h w (gi, gj) grid
+    Just 'v' -> stepSouthCase h w (gi, gj) grid
+    Just '<' -> stepWestCase  h w (gi, gj) grid
+    Nothing  -> return Nothing
     _   -> undefined
-  where
-    gi :: Int
-    gi = fromJust $ findIndex containsGuard grid
 
-    gj :: Int
-    gj = fromJust $ findIndex isGuard (grid !! gi)
-
-    guard :: Char
-    guard = grid !! gi !! gj
-
-play :: [[Char]] -> [[Char]]
-play grid = case step grid of
-              Just grid' -> play grid'
-              Nothing    -> grid
-
-solution :: [[Char]] -> Int
-solution grid = 1 + (sum $ [ length $ filter (== 'X') line | line <- grid' ])
-  where
-    grid' :: [[Char]]
-    grid' = play grid
+play :: Int -> Int -> Int -> Int -> Grid -> IO (Maybe (Int, Int))
+play gi gj h w grid = do
+  r <- step gi gj h w grid
+  case r of
+    Just (gi', gj') -> play gi' gj' h w grid
+    Nothing         -> return Nothing
 
 printGrid :: [[Char]] -> IO ()
 printGrid grid = mapM_ putStrLn grid
+
+initArray :: Int -> Int -> [[Char]] -> Grid -> IO ()
+initArray h w ls grid =
+  mapM_ (\(i, j) -> update (i, j) (ls !! i !! j) grid) coords
+    where
+      coords :: [(Int, Int)]
+      coords = (,) <$> [0..h-1] <*> [0..w-1]
+
+solution :: Int -> Int -> Int -> Int -> Grid -> IO Int
+solution gi gj h w grid = do
+  play gi gj h w grid
+  elems :: [Char] <- getElems grid
+  return $ 1 + (length $ filter (== 'X') elems)
 
 main :: IO ()
 main = do
   handle  <- openFile "input.txt" ReadMode
   content <- hGetContents handle
-  let grid = lines content
-  print $ solution grid
+  let ls    = lines content
+  let height = length ls
+  let width  = length $ head ls
+  let ix :: ((Int, Int), (Int, Int)) = ((0, 0), (height-1, width-1))
+
+  let gi = fromJust $ findIndex containsGuard ls
+  let gj = fromJust $ findIndex isGuard (ls !! gi)
+
+  grid :: Grid <- newArray ix '0'
+  initArray height width ls grid
+
+  result <- solution gi gj height width grid
+
+  print result
+
   hClose handle
