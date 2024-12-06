@@ -14,8 +14,10 @@ jobs:
     - name: "Setup Haskell"
       uses: haskell-actions/setup@v2
 
-    - name: "Install regex-tdfa"
-      run: cabal install --lib regex-tdfa
+    - name: "Install libraries"
+      run: |
+        cabal install --lib regex-tdfa
+        cabal install --lib array
 
     - name: "Run Day 1"
       run: |
