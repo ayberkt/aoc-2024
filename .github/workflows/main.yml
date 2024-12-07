@@ -29,29 +29,40 @@ jobs:
 
     - name: "Run Day 2"
       run: |
-        cabal run Day2Part1
-        cabal run Day2Part2
+        (( $(cabal run Day2Part1) == 660 ))
+        echo "Part 1: OK"
+        (( $(cabal run Day2Part2) == 689 ))
+        echo "Part 2: OK"
 
     - name: "Run Day 3"
       run: |
-        cabal run Day3Part1
-        cabal run Day3Part2
+        (( $(cabal run Day3Part1) == 170807108 ))
+        echo "Part 1: OK"
+        (( $(cabal run Day3Part2) == 74838033  ))
+        echo "Part 2: OK"
 
     - name: "Run Day 4"
       run: |
-        cabal run Day4Part1
-        cabal run Day4Part2
+        (( $(cabal run Day4Part1) == 2547 ))
+        echo "Part 1: OK"
+        (( $(cabal run Day4Part2) == 1939 ))
+        echo "Part 2: OK"
 
     - name: "Run Day 5"
       run: |
-        cabal run Day5Part1
-        cabal run Day5Part2
+        (( $(cabal run Day5Part1) == 5732 ))
+        echo "Part 1: OK"
+        (( $(cabal run Day5Part2) == 4716 ))
+        echo "Part 2: OK"
 
     - name: "Run Day 6"
       run: |
-        cabal run Day6Part1
+        (( $(cabal run Day6Part1) == 5153 ))
+        echo "Part 1: OK"
 
     - name: "Run Day 7"
       run: |
-        cabal run Day7Part1
-        cabal run Day7Part2
+        (( $(cabal run Day7Part1) == 7885693428401 ))
+        echo "Part 1: OK"
+        (( $(cabal run Day7Part2) == 348360680516005 ))
+        echo "Part 2: OK"
