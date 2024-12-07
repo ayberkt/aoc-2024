@@ -22,8 +22,10 @@ jobs:
 
     - name: "Run Day 1"
       run: |
-        cabal run Day1Part1
-        cabal run Day1Part2
+        (( $(cabal run Day1Part1) == 765748   ))
+        echo "Part 1: OK"
+        (( $(cabal run Day1Part2) == 27732508 ))
+        echo "Part 2: OK"
 
     - name: "Run Day 2"
       run: |
