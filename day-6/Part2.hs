@@ -132,18 +132,18 @@ reset og = thaw og
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-6/input.txt" ReadMode
   content <- hGetContents handle
   let ls    = lines content
   let height = length ls
   let width  = length $ head ls
-  let ix :: ((Int, Int), (Int, Int)) = ((0, 0), (height-1, width-1))
+  let ix  = ((0, 0), (height-1, width-1)) :: ((Int, Int), (Int, Int))
 
   let gi = fromJust $ findIndex Part1.containsGuard ls
   let gj = fromJust $ findIndex Part1.isGuard (ls !! gi)
 
-  grid :: Grid <- newArray ix '0'
-  grid0 :: Grid <- newArray ix '0'
+  grid <- newArray ix '0' :: IO Grid
+  grid0 <- newArray ix '0' :: IO Grid
 
   Part1.initArray height width ls grid
   Part1.initArray height width ls grid0

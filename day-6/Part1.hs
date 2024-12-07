@@ -120,22 +120,22 @@ initArray h w ls grid =
 solution :: Int -> Int -> Int -> Int -> Grid -> IO Int
 solution gi gj h w grid = do
   play gi gj h w grid
-  elems :: [Char] <- getElems grid
+  elems <- getElems grid :: IO [Char]
   return $ 1 + (length $ filter (== 'X') elems)
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-6/input.txt" ReadMode
   content <- hGetContents handle
   let ls    = lines content
   let height = length ls
   let width  = length $ head ls
-  let ix :: ((Int, Int), (Int, Int)) = ((0, 0), (height-1, width-1))
+  let ix = ((0, 0), (height-1, width-1)) :: ((Int, Int), (Int, Int))
 
   let gi = fromJust $ findIndex containsGuard ls
   let gj = fromJust $ findIndex isGuard (ls !! gi)
 
-  grid :: Grid <- newArray ix '0'
+  grid <- newArray ix '0' :: IO Grid 
   initArray height width ls grid
 
   result <- solution gi gj height width grid
