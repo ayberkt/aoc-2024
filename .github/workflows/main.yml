@@ -14,42 +14,39 @@ jobs:
     - name: "Setup Haskell"
       uses: haskell-actions/setup@v2
 
-    - name: "Install libraries"
-      run: |
-        cabal install --lib regex-tdfa
-        cabal install --lib array
+    - name: "Build all executables"
+      run: cabal build
 
     - name: "Run Day 1"
       run: |
-        cd day-1
-        time runhaskell -w Part1.hs
-        time runhaskell -w Part2.hs
+        cabal run Day1Part1
+        cabal run Day1Part2
 
     - name: "Run Day 2"
       run: |
         cd day-2
-        time runhaskell -w Part1.hs
-        time runhaskell -w Part2.hs
+        cabal run Day2Part1
+        cabal run Day2Part2
 
     - name: "Run Day 3"
       run: |
         cd day-3
-        time runhaskell -w Part1.hs
-        time runhaskell -w Part2.hs
+        cabal run Day3Part1
+        cabal run Day3Part2
 
     - name: "Run Day 4"
       run: |
         cd day-4
-        time runhaskell -w Part1.hs
-        time runhaskell -w Part2.hs
+        cabal run Day4Part1
+        cabal run Day4Part2
 
     - name: "Run Day 5"
       run: |
         cd day-5
-        time runhaskell -w Part1.hs
-        time runhaskell -w Part2.hs
+        cabal run Day5Part1
+        cabal run Day5Part2
 
     - name: "Run Day 6"
       run: |
         cd day-6
-        time runhaskell -w Part1.hs
+        cabal run Day6Part1
