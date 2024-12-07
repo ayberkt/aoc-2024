@@ -45,3 +45,8 @@ jobs:
     - name: "Run Day 6"
       run: |
         cabal run Day6Part1
+
+    - name: "Run Day 7"
+      run: |
+        cabal run Day7Part1
+        cabal run Day7Part2
