@@ -30,9 +30,9 @@ executable day6
                     base >= 4.17
   default-language: Haskell2010
 
-executable day7
+executable Day7Part2
   hs-source-dirs:   day-7
-  main-is:          Main.hs
+  main-is:          Part2Main.hs
   ghc-options:      -w -O3
   build-depends:    aoc2024,
                     array >= 0.5.7,
