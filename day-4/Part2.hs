@@ -61,7 +61,7 @@ solution grid = length $ filter (isXMAS grid) coords
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-4/input.txt" ReadMode
   content <- hGetContents handle
   let result = solution $ lines content
   print result

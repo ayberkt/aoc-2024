@@ -16,7 +16,7 @@ result ps = sum $ flip alpha ys <$> (fst <$> ps)
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-1/input.txt" ReadMode
   content <- hGetContents handle
   print $ result (parse content)
   hClose handle

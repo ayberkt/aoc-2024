@@ -24,7 +24,7 @@ totalDistance ps = sum $ zipWith dist (sort xs) (sort ys)
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-1/input.txt" ReadMode
   content <- hGetContents handle
   print $ totalDistance (parse content)
   hClose handle

@@ -34,7 +34,7 @@ solution ls = sum $ calculate <$> mulss
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-3/input.txt" ReadMode
   content <- hGetContents handle
   let result = solution $ content
   print result

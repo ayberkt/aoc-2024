@@ -25,7 +25,7 @@ solution s t = sum $ Part1.middle <$> sortBy compare <$> pageLists
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-5/input.txt" ReadMode
   content <- hGetContents handle
   let rules = takeWhile (/= "") $ lines content
   let pages = tail . dropWhile (/= "") $ lines content

@@ -27,7 +27,7 @@ solution ls = length $ filter isSafe reports
 
 main :: IO ()
 main = do
-  handle  <- openFile "input.txt" ReadMode
+  handle  <- openFile "day-2/input.txt" ReadMode
   content <- hGetContents handle
   let result = solution $ lines content
   print result
