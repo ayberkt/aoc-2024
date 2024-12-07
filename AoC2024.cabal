@@ -15,19 +15,92 @@ library
     base >= 4.17
   default-language: Haskell2010
 
-executable day1
+executable Day1Part1
   hs-source-dirs:   day-1
-  main-is:          Main.hs
+  main-is:          Part1Main.hs
   build-depends:    aoc2024,
                     base >= 4.17
   default-language: Haskell2010
 
-executable day6
-  hs-source-dirs:   day-6
-  main-is:          Main.hs
+executable Day1Part2
+  hs-source-dirs:   day-1
+  main-is:          Part2Main.hs
   build-depends:    aoc2024,
-                    array >= 0.5.7,
                     base >= 4.17
+  default-language: Haskell2010
+
+executable Day2Part1
+  hs-source-dirs:   day-2
+  main-is:          Part1Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day2Part2
+  hs-source-dirs:   day-2
+  main-is:          Part2Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day3Part1
+  hs-source-dirs:   day-3
+  main-is:          Part1Main.hs
+  build-depends:    aoc2024,
+                    base       >= 4.17,
+		    regex-tdfa >= 1.3.2.2
+  default-language: Haskell2010
+
+executable Day3Part2
+  hs-source-dirs:   day-3
+  main-is:          Part2Main.hs
+  build-depends:    aoc2024,
+                    base       >= 4.17,
+		    regex-tdfa >= 1.3.2.2
+  default-language: Haskell2010
+
+executable Day4Part1
+  hs-source-dirs:   day-4
+  main-is:          Part1Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day4Part2
+  hs-source-dirs:   day-4
+  main-is:          Part2Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day5Part1
+  hs-source-dirs:   day-5
+  main-is:          Part1Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day5Part2
+  hs-source-dirs:   day-5
+  main-is:          Part2Main.hs
+  build-depends:    aoc2024,
+                    base >= 4.17
+  default-language: Haskell2010
+
+executable Day6Part1
+  hs-source-dirs:   day-6
+  main-is:          Part1Main.hs
+  build-depends:    aoc2024,
+                    base  >= 4.17,
+                    array >= 0.5.7
+  default-language: Haskell2010
+
+executable Day6Part2
+  hs-source-dirs:   day-6
+  main-is:          Part2Main.hs
+  build-depends:    aoc2024,
+                    base  >= 4.17,
+                    array >= 0.5.7
   default-language: Haskell2010
 
 executable Day7Part1
