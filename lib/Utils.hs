@@ -1,6 +1,7 @@
 module Utils where
 
 import Data.Char (isDigit)
+import Data.List (sortOn, groupBy)
 
 parseInt :: String -> Int
 parseInt = read
@@ -52,3 +53,33 @@ directions = [north, east, south, west]
 
 step :: Direction -> (Int, Int) -> (Int, Int)
 step (Direction (dx, dy)) (i, j) = (i+dx, j+dy)
+
+
+cadd :: (Int, Int) -> (Int, Int) -> (Int, Int)
+cadd (i1, j1) (i2, j2) = (i1+i2, j1+j2)
+
+cneg :: (Int, Int) -> (Int, Int)
+cneg (i, j) = (-i, -j)
+
+csub :: (Int, Int) -> (Int, Int) -> (Int, Int)
+csub u v = u `cadd` cneg v
+
+scale :: Int -> (Int, Int) -> (Int, Int)
+scale k (i, j) = (k*i, k*j)
+
+numSatisfying :: (a -> Bool) -> [a] -> Int
+numSatisfying p []                 = 0
+numSatisfying p (x:xs) | p x       = numSatisfying p xs + 1
+                       | otherwise = numSatisfying p xs
+
+
+representatives :: (a -> b) -> [a] -> [(a, b)]
+representatives f xs = [ (x, f x) | x <- xs ]
+
+groupOn :: Eq b => (a -> b) -> [a] -> [[a]]
+groupOn f = groupBy (\x y -> f x == f y)
+
+quotient :: (Ord b, Eq b) => (a -> b) -> [a] -> [[a]]
+quotient f xs = map fst <$> groupOn snd (sortOn snd rs)
+  where
+    rs = representatives f xs

@@ -124,3 +124,9 @@ executable Day7Part2
   hs-source-dirs:   day-7
   main-is:          Part2Main.hs
   other-modules:    Part2
+
+executable Day8Part1
+  import:           executable-standard
+  hs-source-dirs:   day-8
+  main-is:          Part1Main.hs
+  other-modules:    Part1
