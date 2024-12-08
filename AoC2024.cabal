@@ -99,6 +99,7 @@ executable Day6Part1
                     base >= 4.17   && <= 4.17.2.1,
                     array >= 0.5.4 && <  0.6
   default-language: Haskell2010
+  ghc-options:      -O3 -w
   other-modules:    Part1
 
 executable Day6Part2
