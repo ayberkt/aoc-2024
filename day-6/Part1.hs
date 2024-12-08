@@ -1,145 +1,81 @@
 module Part1 where
 
-import Data.Array.IO
+import Data.Array.IArray (Array, (!), array, IArray(bounds))
+import Data.Char ()
+import Data.List (elemIndex, findIndex, nub)
+import Data.Maybe (fromJust)
+import Data.String ()
+import System.IO (hClose, hGetContents, openFile, IOMode(ReadMode))
+import Utils (directions, east, north, south, step, west)
 
-import Data.Char
-import Data.List
-import Data.Maybe
-import Data.String
-import System.IO   (hClose, hGetContents, openFile, IOMode(ReadMode))
-import Data.Array (Array)
+type Grid = Array (Int, Int) Char
 
-type Grid = IOUArray (Int, Int) Char
+type GuardState = ((Int, Int), Int)
 
-northCell :: (Int, Int) -> (Int, Int)
-eastCell  :: (Int, Int) -> (Int, Int)
-southCell :: (Int, Int) -> (Int, Int)
-westCell  :: (Int, Int) -> (Int, Int)
-
-northCell (i, j) = (i-1, j)
-eastCell  (i, j) = (i, j+1)
-southCell (i, j) = (i+1, j)
-westCell  (i, j) = (i, j-1)
-
-containsGuard :: String -> Bool
-containsGuard s = '^' `elem` s || '>' `elem` s || 'v' `elem` s|| '<' `elem` s
-
-getGuard :: Char -> Maybe Char
-getGuard c | '^' == c  = Just c
-           | '>' == c  = Just c
-           | 'v' == c  = Just c
-           | '<' == c  = Just c
-           | otherwise = Nothing
+data NextStep = CanMove
+              | Obstructed
+              | HitWall
+              deriving (Eq, Show)
 
 isGuard :: Char -> Bool
-isGuard c = isJust $ getGuard c
+isGuard c = c `elem` "^>v<"
 
-indexGrid :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe Char)
-indexGrid h w (i, j) grid = do
-  if i >= 0 && i < h && j >= 0 && j < w then do
-    c <- readArray grid (i, j)
-    return $ Just c
-  else
-    return Nothing
+containsGuard :: String -> Bool
+containsGuard = any isGuard
 
-update :: (Int, Int) -> Char -> Grid -> IO ()
-update (i, j) c grid = writeArray grid (i, j) c
+guardDirection :: Char -> Maybe Int
+guardDirection c = elemIndex c "^>v<"
 
-stepNorthCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
-stepNorthCase h w (i, j) grid = do
-  let nc = northCell (i, j)
-  result <- indexGrid h w nc grid
-  case result of
-    Just '.' -> do { update nc '^' grid; update (i, j) 'X' grid; return $ Just nc }
-    Just 'X' -> do { update nc '^' grid; update (i, j) 'X' grid; return $ Just nc }
-    Just '#' -> do { update (i, j) '>' grid; return $ Just (i, j) }
-    Nothing  -> return Nothing
-    _        -> undefined
+infixl 9 !?
 
-stepEastCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
-stepEastCase h w (i, j) grid = do
-  let nc = eastCell (i, j)
-  result <- indexGrid h w nc grid
-  case result of
-    Just '.' -> do { update nc '>' grid; update (i, j) 'X' grid; return $ Just nc }
-    Just 'X' -> do { update nc '>' grid; update (i, j) 'X' grid; return $ Just nc }
-    Just '#' -> do { update (i, j) 'v' grid; return $ Just (i, j) }
-    Nothing  -> return Nothing
-    _        -> undefined
+(!?) :: Grid -> (Int, Int) -> Maybe Char
+(!?) grid (i, j) =
+  let
+    (_, (bi, bj)) = bounds grid
+  in
+    if i >= 0 && i <= bi && j >= 0 && j <= bj then do
+      Just $ grid ! (i, j)
+    else
+      Nothing
 
-stepSouthCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
-stepSouthCase h w (i, j) grid = do
-  let nc = southCell (i, j)
-  result <- indexGrid h w nc grid
-  case result of
-    Just '.' -> do { update nc 'v' grid; update (i, j) 'X' grid; return (Just nc) }
-    Just 'X' -> do { update nc 'v' grid; update (i, j) 'X' grid; return (Just nc) }
-    Just '#' -> do { update (i, j) '<' grid; return (Just (i, j)) }
-    Nothing  -> return Nothing
-    _        -> undefined
+nextStep :: GuardState -> (Int, Int)
+nextStep (c, d) = step (directions !! d) c
 
-stepWestCase :: Int -> Int -> (Int, Int) -> Grid -> IO (Maybe (Int, Int))
-stepWestCase h w (i, j) grid = do
-  let nc = westCell (i, j)
-  result <- indexGrid h w (westCell (i, j)) grid
-  case result of
-    Just '.' -> do { update nc '<' grid; update (i, j) 'X' grid; return (Just nc) }
-    Just 'X' -> do { update nc '<' grid; update (i, j) 'X' grid; return (Just nc) }
-    Just '#' -> do { update (i, j) '^' grid; return $ Just (i, j) }
-    Nothing  -> return Nothing
-    _        -> undefined
+rotate :: GuardState -> GuardState
+rotate (c, d) = (c, (d + 1) `mod` 4)
 
-step :: Int -> Int -> Int -> Int -> Grid -> IO (Maybe (Int, Int))
-step gi gj h w grid = do
-  r <- indexGrid h w (gi, gj) grid
-  case r of
-    Just '^' -> stepNorthCase h w (gi, gj) grid
-    Just '>' -> stepEastCase  h w (gi, gj) grid
-    Just 'v' -> stepSouthCase h w (gi, gj) grid
-    Just '<' -> stepWestCase  h w (gi, gj) grid
-    Nothing  -> return Nothing
-    _   -> undefined
-
-play :: Int -> Int -> Int -> Int -> Grid -> IO (Maybe (Int, Int))
-play gi gj h w grid = do
-  r <- step gi gj h w grid
-  case r of
-    Just (gi', gj') -> play gi' gj' h w grid
-    Nothing         -> return Nothing
-
-printGrid :: [[Char]] -> IO ()
-printGrid grid = mapM_ putStrLn grid
-
-initArray :: Int -> Int -> [[Char]] -> Grid -> IO ()
-initArray h w ls grid =
-  mapM_ (\(i, j) -> update (i, j) (ls !! i !! j) grid) coords
-    where
-      coords :: [(Int, Int)]
-      coords = (,) <$> [0..h-1] <*> [0..w-1]
-
-solution :: Int -> Int -> Int -> Int -> Grid -> IO Int
-solution gi gj h w grid = do
-  play gi gj h w grid
-  elems <- getElems grid :: IO [Char]
-  return $ 1 + (length $ filter (== 'X') elems)
+play :: Grid -> [(Int, Int)] -> GuardState -> Int
+play grid coords gs = length . nub . fromJust $ playAux coords gs
+  where
+    playAux :: [(Int, Int)] -> GuardState -> Maybe [(Int, Int)]
+    playAux coords gs@(c, d) =
+      case considerNextStep gs of
+        CanMove    -> playAux (c:coords) (nextStep gs, d)
+        Obstructed -> playAux (c:coords) (rotate gs)
+        HitWall    -> return (c:coords)
+      where
+        considerNextStep :: GuardState -> NextStep
+        considerNextStep gs = case grid !? nextStep gs of
+                                Just '.' -> CanMove
+                                Just '#' -> Obstructed
+                                Nothing  -> HitWall
 
 main :: IO ()
 main = do
   handle  <- openFile "day-6/input.txt" ReadMode
   content <- hGetContents handle
-  let ls    = lines content
-  let height = length ls
-  let width  = length $ head ls
-  let ix = ((0, 0), (height-1, width-1)) :: ((Int, Int), (Int, Int))
 
-  let gi = fromJust $ findIndex containsGuard ls
-  let gj = fromJust $ findIndex isGuard (ls !! gi)
+  let
+    ls      = lines content
+    gi      = fromJust $ findIndex containsGuard ls
+    gj      = fromJust $ findIndex isGuard (ls !! gi)
+    d       = fromJust $ guardDirection (ls !! gi !! gj)
+    h       = length ls
+    w       = length $ head ls
+    range   = [ (i, j) | i <- [0..h-1], j <- [0..w-1] ]
+    assocs0 = [ ((i, j), ls !! i !! j) | (i, j) <- range ]
+    assocs  = (\(p, x) -> if isGuard x then (p, '.') else (p, x)) <$> assocs0
+    grid    = array ((0, 0), (h-1, w-1)) assocs :: Grid
 
-  grid <- newArray ix '0' :: IO Grid 
-  initArray height width ls grid
-
-  result <- solution gi gj height width grid
-
-  print result
-
+  print $ play grid [] ((gi, gj), d)
   hClose handle
