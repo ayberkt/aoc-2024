@@ -56,8 +56,6 @@ main = do
 
   let antennaeGrouped = groupAntennae (allAntennae ls) :: [[Antenna]]
 
-  print . nub . concat $ numAntinodes h w <$> antennaeGrouped
   print . length . nub . concat $ numAntinodes h w <$> antennaeGrouped
 
-  -- print result
   hClose handle
