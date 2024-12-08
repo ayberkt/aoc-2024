@@ -77,5 +77,5 @@ main = do
     assocs  = (\(p, x) -> if isGuard x then (p, '.') else (p, x)) <$> assocs0
     grid    = array ((0, 0), (h-1, w-1)) assocs :: Grid
 
-  print $ play grid [] ((gi, gj), d)
+  print $ play grid [] ((gi, gj), d+1)
   hClose handle
