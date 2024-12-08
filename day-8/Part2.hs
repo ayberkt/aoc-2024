@@ -20,7 +20,7 @@ antinodesWRT ht wd v u = beta <$> range
 
 numAntinodes :: Int -> Int -> [Antenna] -> [(Int, Int)]
 numAntinodes ht wd as =
-  concat [ concat $ antinodesWRT ht wd v <$> (filter (/= v) vs) | v <- vs ]
+  concat [ concat $ antinodesWRT ht wd v <$> filter (/= v) vs | v <- vs ]
     where
       vs :: [(Int, Int)]
       vs = snd <$> as
