@@ -73,13 +73,8 @@ numSatisfying p (x:xs) | p x       = numSatisfying p xs + 1
                        | otherwise = numSatisfying p xs
 
 
-representatives :: (a -> b) -> [a] -> [(a, b)]
-representatives f xs = [ (x, f x) | x <- xs ]
-
 groupOn :: Eq b => (a -> b) -> [a] -> [[a]]
 groupOn f = groupBy (\x y -> f x == f y)
 
 quotient :: (Ord b, Eq b) => (a -> b) -> [a] -> [[a]]
-quotient f xs = map fst <$> groupOn snd (sortOn snd rs)
-  where
-    rs = representatives f xs
+quotient f = groupOn f . sortOn f
