@@ -32,3 +32,23 @@ digits = reverse . digitsAux
 (<.>) m n = sum [ k * d |  (d, k) <- zip (digitsAux n ++ digitsAux m) tens ]
   where
     tens = (10 ^) <$> [0..]
+
+newtype Direction = Direction (Int, Int) deriving (Eq, Show)
+
+north :: Direction
+north = Direction (-1, 0)
+
+east :: Direction
+east = Direction (0, 1)
+
+south :: Direction
+south = Direction (1, 0)
+
+west :: Direction
+west = Direction (0, -1)
+
+directions :: [Direction]
+directions = [north, east, south, west]
+
+step :: Direction -> (Int, Int) -> (Int, Int)
+step (Direction (dx, dy)) (i, j) = (i+dx, j+dy)
