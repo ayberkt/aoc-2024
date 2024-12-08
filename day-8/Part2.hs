@@ -25,18 +25,16 @@ numAntinodes ht wd as =
       vs :: [(Int, Int)]
       vs = snd <$> as
 
+solution :: [String] -> Int
+solution ls = length . nub . concat $ numAntinodes h w <$> antennaeGrouped
+  where
+    h = length ls
+    w = length $ head ls
+    antennaeGrouped = groupAntennae (allAntennae ls) :: [[Antenna]]
+
 main :: IO ()
 main = do
   handle  <- openFile "day-8/input.txt" ReadMode
   content <- hGetContents handle
-
-  let
-    ls = lines content
-    h  = length ls
-    w  = length $ head ls
-
-  let antennaeGrouped = groupAntennae (allAntennae ls) :: [[Antenna]]
-
-  print . length . nub . concat $ numAntinodes h w <$> antennaeGrouped
-
+  print . solution $ lines content
   hClose handle
