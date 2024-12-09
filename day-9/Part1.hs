@@ -100,6 +100,7 @@ main = do
   print $ length $ filter isEmptySpace es'
   print $ checksum 0 $ defragment es'
   print $ newCount 0 $ render es'
-  print $ newCount 0 $ render $ defragment es'
+  print $ checksum 0 $ es'
+  print $ newCount 0 $ render $ defragment $ defragment es'
   -- print $ checksum 0 $ defragment $ rearrange 0 (reverse es) es
   hClose handle

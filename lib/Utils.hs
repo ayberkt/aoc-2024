@@ -2,9 +2,16 @@ module Utils where
 
 import Data.Char (isDigit)
 import Data.List (sortOn, groupBy)
+import GHC.Num (integerBit)
 
 parseInt :: String -> Int
 parseInt = read
+
+parseDigit :: Char -> Int
+parseDigit = parseInt . return
+
+integer :: Int -> Integer
+integer n = fromIntegral n
 
 splitAux :: String -> (String, String)
 splitAux s =
@@ -78,3 +85,12 @@ groupOn f = groupBy (\x y -> f x == f y)
 
 quotient :: (Ord b, Eq b) => (a -> b) -> [a] -> [[a]]
 quotient f = groupOn f . sortOn f
+
+interweave :: [a] -> [a] -> [a]
+interweave []     ys     = ys
+interweave xs     []     = xs
+interweave (x:xs) (y:ys) = x : y : interweave xs ys
+
+insertAt :: Int -> a -> [a] -> [a]
+insertAt 0 y (x:xs) = y:xs
+insertAt n y (x:xs) = x : insertAt (n-1) y xs
