@@ -41,12 +41,12 @@ eraseAtTheEnd :: Int -> [Block] -> [Block]
 eraseAtTheEnd n = reverse . erase n . reverse
 
 isFile :: Block -> Bool
-isFile (File _ _)    = True
-isFile (Space _) = False
+isFile (File _ _) = True
+isFile (Space _)  = False
 
 isSpace :: Block -> Bool
-isSpace (File _ _)    = True
-isSpace (Space _) = False
+isSpace (File _ _) = True
+isSpace (Space _)  = False
 
 -- The memory is fragmented if a file block occurs after a space block.
 isFragmented :: [Block] -> Bool
