@@ -9,31 +9,19 @@ import Data.Maybe
 import Utils
 import Utils (parseDigit)
 
-filesWithIDs :: String -> [(Int, Char)]
-filesWithIDs s = zip files ((head . show) <$> [0..length files-1])
-  where
-    files :: [Int]
-    files = parseDigit <$> fst <$> filter (even . snd) (zip s [0..length s-1])
+data Expr = FreeSpace Int | File String Int deriving (Eq, Show)
 
-spaces :: String -> [Int]
-spaces s = parseDigit <$> fst <$> filter (odd . snd) (zip s [0..length s-1])
+newParseAux :: Int -> String -> [(String, Int, Maybe Char)]
+newParseAux k [c]        = [(show k, parseDigit c, Nothing)]
+newParseAux k (c1:c2:cs) = (show k, parseDigit c1, Just c2) : newParseAux (k+1) cs
 
-data Expr = FreeSpace Int | File Char Int deriving (Eq, Show)
+gamma :: [(String, Int, Maybe Char)] -> [Expr]
+gamma []                  = []
+gamma ((s, i, Nothing):ps) = [File s i]
+gamma ((s, i, Just c):ps) = File s i : FreeSpace (parseDigit c) : gamma ps
 
 symbolic :: String -> [Expr]
-symbolic s = interweave xs ys
-  where
-    fis :: [(Int, Char)]
-    fis = filesWithIDs s
-
-    ns :: [Int]
-    ns = spaces s
-
-    xs :: [Expr]
-    xs = [ File i f | (f, i) <- fis ]
-
-    ys :: [Expr]
-    ys = FreeSpace <$> ns
+symbolic = gamma . newParseAux 0
 
 ignore :: Int -> [Expr] -> [Expr]
 ignore j []               = []
@@ -62,7 +50,7 @@ checksum k [] = 0
 checksum k (FreeSpace 0:es) = checksum k es
 checksum k (FreeSpace n:es) = checksum k es
 checksum k (File c 0:es) = checksum k es
-checksum k (File c n:es) = (parseDigit c * k) + checksum (k+1) (File c (n-1):es)
+checksum k (File c n:es) = (read c * k) + checksum (k+1) (File c (n-1):es)
 
 isZeroSpace :: Expr -> Bool
 isZeroSpace (FreeSpace 0) = True
@@ -75,7 +63,7 @@ isEmptySpace e             = False
 render :: [Expr] -> String
 render [] = []
 render (FreeSpace n:es) = replicate n '.' ++ render es
-render (File c n:es) = replicate n c ++ render es
+render (File s n:es) = concat (replicate n s) ++ render es
 
 defragment :: [Expr] -> [Expr]
 defragment [] = []
@@ -95,12 +83,7 @@ main = do
   content <- hGetContents handle
   let es  = symbolic $ (head $ lines content)
   let es' = rearrange 0 (reverse es) es
-  print $ length $ es'
-  print $ length $ defragment es'
-  print $ length $ filter isEmptySpace es'
   print $ checksum 0 $ defragment es'
-  print $ newCount 0 $ render es'
-  print $ checksum 0 $ es'
-  print $ newCount 0 $ render $ defragment $ defragment es'
+  print $ checksum 0 es'
   -- print $ checksum 0 $ defragment $ rearrange 0 (reverse es) es
   hClose handle
