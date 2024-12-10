@@ -1,89 +1,100 @@
 module Part1 where
 
-import Data.List
-import Data.String
-import System.IO
-import Data.Char
-import Data.Maybe
+import System.IO (IOMode(ReadMode), openFile, hGetContents, hClose)
 
-import Utils
 import Utils (parseDigit)
 
-data Expr = FreeSpace Int | File String Int deriving (Eq, Show)
+data Block = Space Int
+           | File String Int deriving (Eq, Show)
 
-newParseAux :: Int -> String -> [(String, Int, Maybe Char)]
-newParseAux k [c]        = [(show k, parseDigit c, Nothing)]
-newParseAux k (c1:c2:cs) = (show k, parseDigit c1, Just c2) : newParseAux (k+1) cs
+type SpaceSize = Int
+type FileSize  = Int
 
-gamma :: [(String, Int, Maybe Char)] -> [Expr]
-gamma []                  = []
-gamma ((s, i, Nothing):ps) = [File s i]
-gamma ((s, i, Just c):ps) = File s i : FreeSpace (parseDigit c) : gamma ps
+parseDiskMap :: String -> [(String, FileSize, SpaceSize)]
+parseDiskMap = parseRec 0
+  where
+    parseRec :: Int -> String -> [(String, FileSize, SpaceSize)]
+    parseRec k [c]      = [(show k, parseDigit c, 0)]
+    parseRec k (c:d:cs) = (show k, parseDigit c, parseDigit d) : parseRec (k+1) cs
 
-symbolic :: String -> [Expr]
-symbolic = gamma . newParseAux 0
+toBlocks :: [(String, FileSize, SpaceSize)] -> [Block]
+toBlocks = foldr (\(s, i, k) ps' -> File s i : Space k : ps') []
 
-ignore :: Int -> [Expr] -> [Expr]
-ignore j []               = []
-ignore 0 es               = es
-ignore k (FreeSpace 0:es) = ignore k es
-ignore k (File c 0:es)    = ignore k es
-ignore k (FreeSpace n:es) = ignore (k-1) (FreeSpace (n-1):es)
-ignore k (File c n:es)    = ignore (k-1) (File c (n-1):es)
+diskMapToBlocks :: String -> [Block]
+diskMapToBlocks = toBlocks . parseDiskMap
 
-dropEnd :: Int -> [Expr] -> [Expr]
-dropEnd j xs = reverse $ ignore j $ reverse xs
+-- Subtraction with remainder.
+-- Gives the monus as the first component and the remainder as the second
+-- component.
+diff :: Int -> Int -> (Int, Int)
+diff m n = let k = m - n in (max 0 k, abs (min 0 k))
 
-isFile :: Expr -> Bool
-isFile (File _ _) = True
-isFile (FreeSpace _) = False
+erase :: Int -> [Block] -> [Block]
+erase _ []            = []
+erase 0 es            = es
+erase k (Space 0:es)  = erase k es
+erase k (File c 0:es) = erase k es
+erase k (Space n:es)  = Space n : erase k es
+erase k (File c n:es) = let (d, r) = diff n k in erase r (File c d : es)
 
-rearrange :: Int -> [Expr] -> [Expr] -> [Expr]
-rearrange j es               []                        = []
-rearrange j (File c n:es)    (FreeSpace k:os) | n <= k = if all isFile os  then os else File c n : rearrange (j+n) es (FreeSpace (k - n):(dropEnd n os))
-rearrange j (File c n:es)    (FreeSpace k:os) | n > k  = if all isFile os then os else File c k : rearrange  (j+k) (File c (n-k):es) (dropEnd k os)
-rearrange j es               (File c n:os)             = File c n : rearrange j es os
-rearrange j (FreeSpace n:es) os                        = rearrange (j+n) es (dropEnd n os)
+eraseAtTheEnd :: Int -> [Block] -> [Block]
+eraseAtTheEnd n = reverse . erase n . reverse
 
-checksum :: Int -> [Expr] -> Int
-checksum k [] = 0
-checksum k (FreeSpace 0:es) = checksum k es
-checksum k (FreeSpace n:es) = checksum k es
-checksum k (File c 0:es) = checksum k es
-checksum k (File c n:es) = (read c * k) + checksum (k+1) (File c (n-1):es)
+isFile :: Block -> Bool
+isFile (File _ _)    = True
+isFile (Space _) = False
 
-isZeroSpace :: Expr -> Bool
-isZeroSpace (FreeSpace 0) = True
-isZeroSpace e = False
+isSpace :: Block -> Bool
+isSpace (File _ _)    = True
+isSpace (Space _) = False
 
-isEmptySpace :: Expr -> Bool
-isEmptySpace (FreeSpace _) = True
-isEmptySpace e             = False
+-- The memory is fragmented if a file block occurs after a space block.
+isFragmented :: [Block] -> Bool
+isFragmented []            = False
+isFragmented (File _ _:bs) = isFragmented bs
+isFragmented (Space 0:bs)  = isFragmented bs
+isFragmented (Space _:bs)  = any isFile bs
 
-render :: [Expr] -> String
+defragAux :: [Block] -> [Block] -> [Block]
+defragAux _             []           = []
+defragAux (File c n:ts) (Space 0:bs) = defragAux (File c n:ts) bs
+defragAux (File c 0:ts) bs           = defragAux ts bs
+defragAux (File c n:ts) (Space k:bs) = let
+                                         (d, r) = k `diff` n
+                                         bs'    = eraseAtTheEnd (n-r) bs
+                                         move   = File c (n-r) -- chunk to move
+                                         rem    = File c r     -- chunk remaining
+                                       in
+                                         if isFragmented (Space d:bs') then
+                                           move : defragAux (rem:ts) (Space d:bs')
+                                         else
+                                           File c (n-r) : Space d : bs'
+defragAux ts            (File c n:bs) = File c n : defragAux ts bs
+
+defrag :: [Block] -> [Block]
+defrag bs = defragAux (reverse (filter isFile bs)) bs
+
+checksum :: [Block] -> Int
+checksum = checksumRec 0
+  where
+    checksumRec :: Int -> [Block] -> Int
+    checksumRec k []            = 0
+    checksumRec k (Space 0:es)  = checksumRec k es
+    checksumRec k (Space n:es)  = checksumRec k es
+    checksumRec k (File _ 0:es) = checksumRec k es
+    checksumRec k (File c n:es) = read c * k + checksumRec (k+1) (File c (n-1):es)
+
+solution :: [String] -> Int
+solution = checksum . defrag . diskMapToBlocks . head
+
+render :: [Block] -> String
 render [] = []
-render (FreeSpace n:es) = replicate n '.' ++ render es
+render (Space n:es) = replicate n '.' ++ render es
 render (File s n:es) = concat (replicate n s) ++ render es
 
-defragment :: [Expr] -> [Expr]
-defragment [] = []
-defragment (File c m:File c' n:es) | c == c' = defragment $ File c (m * n) : es
-defragment (e:es) = e :  defragment es
-
-newCount :: Int -> String -> Int
-newCount k []     = 0
-newCount k (c:cs) = k * parseDigit c + newCount (k+1) cs
-
-isFragmented :: [Expr] -> Int
-isFragmented es = length (dropWhile isFile es)
-
-main :: IO ()
-main = do
+run :: IO ()
+run = do
   handle  <- openFile "day-9/input.txt" ReadMode
   content <- hGetContents handle
-  let es  = symbolic $ (head $ lines content)
-  let es' = rearrange 0 (reverse es) es
-  print $ checksum 0 $ defragment es'
-  print $ checksum 0 es'
-  -- print $ checksum 0 $ defragment $ rearrange 0 (reverse es) es
+  print . solution $ lines content
   hClose handle
