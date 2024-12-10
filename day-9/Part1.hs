@@ -87,11 +87,6 @@ checksum = checksumRec 0
 solution :: [String] -> Int
 solution = checksum . defrag . diskMapToBlocks . head
 
-render :: [Block] -> String
-render [] = []
-render (Space n:es) = replicate n '.' ++ render es
-render (File s n:es) = concat (replicate n s) ++ render es
-
 run :: IO ()
 run = do
   handle  <- openFile "day-9/input.txt" ReadMode
