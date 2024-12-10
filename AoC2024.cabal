@@ -143,3 +143,9 @@ executable Day9Part1
   hs-source-dirs:   day-9
   main-is:          Part1Main.hs
   other-modules:    Part1
+
+executable Day9Part2
+  import:           executable-standard
+  hs-source-dirs:   day-9
+  main-is:          Part2Main.hs
+  other-modules:    Part2
