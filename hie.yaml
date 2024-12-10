@@ -34,3 +34,5 @@ cradle:
       component: "Day8Part1"
     - path: "day-8"
       component: "Day8Part2"
+    - path: "day-8"
+      component: "Day8Part1"
