@@ -12,7 +12,7 @@ blink (n:ns) | even (length (digits n)) = digitsToInt xs : digitsToInt ys : blin
 blink (n:ns)                            = 2024 * n : blink ns
 
 solution :: [String] -> Int
-solution = length . last . take 26 . iterate blink . numbers . head
+solution = length . head . drop 25 . iterate blink . numbers . head
 
 run :: IO ()
 run = do
