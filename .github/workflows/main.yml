@@ -73,3 +73,8 @@ jobs:
         echo "Part 1: OK"
         (( $(cabal run Day8Part2) == 949 ))
         echo "Part 2: OK"
+
+    - name: "Run Day 11"
+      run: |
+        (( $(cabal run Day11Part1) == 183248 ))
+        echo "Part 1: OK"

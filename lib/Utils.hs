@@ -1,7 +1,7 @@
 module Utils where
 
 import Data.Char (isDigit)
-import Data.List (sortOn, groupBy)
+import Data.List (sortOn, groupBy, foldl')
 import GHC.Num (integerBit)
 
 parseInt :: String -> Int
@@ -37,9 +37,13 @@ digits :: Int -> [Int]
 digits = reverse . digitsAux
 
 (<.>) :: Int -> Int -> Int
+(<.>) m 0 = m * 10
 (<.>) m n = sum [ k * d |  (d, k) <- zip (digitsAux n ++ digitsAux m) tens ]
   where
     tens = (10 ^) <$> [0..]
+
+digitsToInt :: [Int] -> Int
+digitsToInt = foldl' (<.>) 0
 
 newtype Direction = Direction (Int, Int) deriving (Eq, Show)
 
@@ -94,3 +98,11 @@ interweave (x:xs) (y:ys) = x : y : interweave xs ys
 insertAt :: Int -> a -> [a] -> [a]
 insertAt 0 y (x:xs) = y:xs
 insertAt n y (x:xs) = x : insertAt (n-1) y xs
+
+splitInHalf :: [a] -> ([a], [a])
+splitInHalf xs = (ys, zs)
+  where
+    n  = length xs
+    k  = n `div` 2
+    ys = take k xs
+    zs = drop k xs
