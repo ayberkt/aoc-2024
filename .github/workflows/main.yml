@@ -78,3 +78,5 @@ jobs:
       run: |
         (( $(cabal run Day11Part1) == 183248 ))
         echo "Part 1: OK"
+        (( $(python3 day-11/Part2.py) == 218811774248729 ))
+        echo "Part 2: OK"
