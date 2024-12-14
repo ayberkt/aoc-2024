@@ -1,24 +1,12 @@
-def cut(ns):
-    xs = []
-    ys = []
-
-    for i in range(0, len(ns)):
-        if i < len(ns) / 2:
-            xs.append(ns[i])
-        else:
-            ys.append(ns[i])
-
-    return (xs, ys)
-
 def blink(ns):
-
     rs = []
 
     for n in ns:
         if n == 0:
             rs.append(1)
         elif len(str(n)) % 2 == 0:
-            (xs, ys) = cut(str(n))
+            l = len(str(n))
+            (xs, ys) = (str(n)[0:(l//2)], str(n)[(l//2):])
             x = int("".join(xs))
             y = int("".join(ys))
             rs.append(x)
@@ -28,54 +16,42 @@ def blink(ns):
 
     return rs
 
-def iterated_blink(k, ns):
 
-    ms = ns
-
-    for i in range(0, k):
-        # print(ms)
-        ms = blink(ms)
-
-    return ms
-
-
-def stone_count(k, ns):
+def stone_count(k, n):
     if k == 0:
-        return len(ns)
+        return 1
     else:
-        ms = blink(ns)
+        ms = blink([n])
+        return sum([ stone_count(k-1, m) for m in ms ])
 
-        return sum([ stone_count(k-1, [ m ]) for m in ms ])
 
-counts = []
+counts = {}
 
-for _ in range(0, 76):
-    counts.append({})
+def stone_countm(k, n):
+    if k == 0:
+        return 1
 
-def stone_countm(k, ns):
-    if k <= 3 and len(ns) <= 2:
-        s = frozenset(ns)
-        counts[k][s] = stone_count(k, ns)
-        return counts[k][s]
-    else:
-        ms = blink(ns)
-        s  = frozenset(ms)
-        if len(ns) <= 30 and s in counts[k]:
-            # print("Cache hit.")
-            return counts[k][s]
-        else:
-            xs, ys = cut(ms)
-            result = stone_countm(k-1, xs) + stone_countm(k-1, ys)
+    if (k, n) not in counts:
+        ms = blink([n])
+        counts[(k, n)] = sum([ stone_countm(k-1, m) for m in ms ])
 
-            if len(ns) <= 20:
-                counts[k][s] = result
+    return counts[(k, n)]
 
-            return result
 
-init   = "3 386358 86195 85 1267 3752457 0 741"
-stones = [ int(s) for s in init.split(" ") ]
+def main():
+    file_name = "day-11/input.txt"
+    lines     = []
 
-print(stone_countm(75, stones))
+    with open(file_name, "r") as file:
+        lines  = list(file)
+        init   = lines[0]
+        stones = [ int(s) for s in init.split(" ") ]
 
-# for c in counts:
-#     print(len(c))
+        total = 0
+        for s in stones:
+            total += stone_countm(75, s)
+        print(total)
+        print(len(counts))
+
+if __name__ == "__main__":
+    main()
