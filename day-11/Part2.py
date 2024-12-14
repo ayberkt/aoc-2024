@@ -51,7 +51,6 @@ def main():
         for s in stones:
             total += stone_countm(75, s)
         print(total)
-        print(len(counts))
 
 if __name__ == "__main__":
     main()
