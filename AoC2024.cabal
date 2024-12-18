@@ -23,7 +23,9 @@ common executable-standard
 library
   hs-source-dirs:   lib
   exposed-modules:  Utils
-  build-depends:    base >= 4.17 && <= 4.17.21
+  build-depends:    base >= 4.17 && <= 4.17.21,
+                    parallel   >= 3.2.1 && < 3.3,
+                    containers >= 0.6.7 && < 0.8
 
 executable Day1Part1
   import:           executable-standard
