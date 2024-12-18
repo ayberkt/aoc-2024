@@ -48,7 +48,7 @@ def perimeter(region):
 def main():
     global lines, width, height
 
-    file_name = "/Users/ayberkt/Code/aoc-2024/day-12/input.txt"
+    file_name = "day-12/input.txt"
     file      = open(file_name, "r")
     lines     = [ line.rstrip() for line in file ]
     height    = len(lines)
