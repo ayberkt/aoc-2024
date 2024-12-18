@@ -1,24 +1,24 @@
 module Part2 where
 
+import Control.Parallel.Strategies (parMap, rseq)
 import Data.Array (array)
 import Data.List (findIndex)
-import Prelude hiding (lookup)
 import Data.Maybe (fromJust, isJust)
+import Data.Set (Set, insert, empty, member)
+import Prelude hiding (lookup)
 import System.IO (hClose, hGetContents, openFile, IOMode(ReadMode))
-import Control.Parallel.Strategies (parMap, rseq)
-import qualified Data.Set as Set
 
 import Utils (directions, east, north, south, step, west)
 import Part1 (GuardState, NextStep(..), nextStep, containsGuard, isGuard, Grid,
               rotate, (!?))
 import qualified Part1
 
-type History = Set.Set GuardState
+type History = Set GuardState
 
 type AdditionalObstruction = (Int, Int)
 
 resultsInLoop :: Grid -> AdditionalObstruction -> GuardState -> Bool
-resultsInLoop grid coordObs = playAux Set.empty
+resultsInLoop grid coordObs = playAux empty
   where
     considerNextStep :: GuardState -> NextStep
     considerNextStep gs =
@@ -29,13 +29,12 @@ resultsInLoop grid coordObs = playAux Set.empty
         Nothing                            -> HitWall
 
     playAux :: History -> GuardState -> Bool
-    playAux visited gs@(c, d) | Set.member gs visited = True
+    playAux visited gs@(c, d) | member gs visited = True
     playAux visited gs@(c, d) =
       case considerNextStep gs of
-        CanMove    -> playAux (Set.insert gs visited) (nextStep gs, d)
-        Obstructed -> playAux (Set.insert gs visited) (rotate gs)
+        CanMove    -> playAux (insert gs visited) (nextStep gs, d)
+        Obstructed -> playAux (insert gs visited) (rotate gs)
         HitWall    -> False
-
 
 solution :: [String] -> IO Int
 solution ls = return . length . filter id $ parMap rseq resultsInLoop' pathP1
