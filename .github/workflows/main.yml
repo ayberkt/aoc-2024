@@ -59,6 +59,8 @@ jobs:
       run: |
         (( $(cabal run Day6Part1) == 5153 ))
         echo "Part 1: OK"
+        (( $(cabal run Day6Part2 -- +NTS -N4) == 1711 ))
+        echo "Part 2: OK"
 
     - name: "Run Day 7"
       run: |
