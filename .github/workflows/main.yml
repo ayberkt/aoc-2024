@@ -87,3 +87,8 @@ jobs:
         echo "Part 1: OK"
         (( $(python3 day-11/Part2.py) == 218811774248729 ))
         echo "Part 2: OK"
+
+    - name: "Run Day 12"
+      run: |
+        (( $(python3 day-12/Part1.py) == 1473276 ))
+        echo "Part 1: OK"
