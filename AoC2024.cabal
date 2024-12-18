@@ -102,15 +102,17 @@ executable Day6Part1
   ghc-options:      -O3 -w
   other-modules:    Part1
 
--- executable Day6Part2
---   hs-source-dirs:   day-6
---   main-is:          Part2Main.hs
---   build-depends:    AoC2024,
---                     base  >= 4.17  && <= 4.17.2.1,
---                     array >= 0.5.4 && <  0.6
---   default-language: Haskell2010
---   other-modules:    Part1,
---                     Part2
+executable Day6Part2
+  hs-source-dirs:   day-6
+  main-is:          Part2Main.hs
+  ghc-options:      -threaded -O3 -w
+  build-depends:    AoC2024,
+                    base     >= 4.17  && <= 4.17.2.1,
+                    array    >= 0.5.4 && <  0.6,
+		    parallel >= 3.2.1 && < 3.3
+  default-language: Haskell2010
+  other-modules:    Part1,
+                    Part2
 
 executable Day7Part1
   import:           executable-standard
