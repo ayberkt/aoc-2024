@@ -44,8 +44,8 @@ nextStep (c, d) = step (directions !! d) c
 rotate :: GuardState -> GuardState
 rotate (c, d) = (c, (d + 1) `mod` 4)
 
-play :: Grid -> [(Int, Int)] -> GuardState -> Int
-play grid coords gs = length . nub . fromJust $ playAux coords gs
+play :: Grid -> GuardState -> Int
+play grid gs = length . nub . fromJust $ playAux [] gs
   where
     playAux :: [(Int, Int)] -> GuardState -> Maybe [(Int, Int)]
     playAux coords gs@(c, d) =
@@ -77,5 +77,5 @@ main = do
     assocs  = (\(p, x) -> if isGuard x then (p, '.') else (p, x)) <$> assocs0
     grid    = array ((0, 0), (h-1, w-1)) assocs :: Grid
 
-  print $ play grid [] ((gi, gj), d)
+  print $ play grid ((gi, gj), d)
   hClose handle
