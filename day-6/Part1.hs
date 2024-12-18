@@ -45,14 +45,14 @@ rotate :: GuardState -> GuardState
 rotate (c, d) = (c, (d + 1) `mod` 4)
 
 play :: Grid -> GuardState -> Int
-play grid gs = length . nub . fromJust $ playAux [] gs
+play grid gs = length . nub $ playAux [] gs
   where
-    playAux :: [(Int, Int)] -> GuardState -> Maybe [(Int, Int)]
+    playAux :: [(Int, Int)] -> GuardState -> [(Int, Int)]
     playAux coords gs@(c, d) =
       case considerNextStep gs of
         CanMove    -> playAux (c:coords) (nextStep gs, d)
         Obstructed -> playAux (c:coords) (rotate gs)
-        HitWall    -> return (c:coords)
+        HitWall    -> c:coords
       where
         considerNextStep :: GuardState -> NextStep
         considerNextStep gs = case grid !? nextStep gs of
