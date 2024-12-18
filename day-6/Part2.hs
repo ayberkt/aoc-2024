@@ -36,13 +36,10 @@ resultsInLoop grid coordObs = playAux Set.empty
         Obstructed -> playAux (Set.insert gs visited) (rotate gs)
         HitWall    -> False
 
-main :: IO ()
-main = do
-  handle  <- openFile "day-6/input.txt" ReadMode
-  content <- hGetContents handle
 
-  let
-    ls      = lines content
+solution :: [String] -> IO Int
+solution ls = return . length . filter id $ parMap rseq resultsInLoop' pathP1
+  where
     gi      = fromJust $ findIndex containsGuard ls
     gj      = fromJust $ findIndex isGuard (ls !! gi)
     d       = fromJust $ Part1.guardDirection (ls !! gi !! gj)
@@ -57,7 +54,10 @@ main = do
     resultsInLoop' :: AdditionalObstruction -> Bool
     resultsInLoop' = flip (resultsInLoop grid) ((gi, gj), d)
 
-    -- Obstructions resulting in a loop.
-  print . length . filter id $ parMap rseq resultsInLoop' pathP1
-
+main :: IO ()
+main = do
+  handle  <- openFile "day-6/input.txt" ReadMode
+  content <- hGetContents handle
+  result  <- solution $ lines content
+  print result
   hClose handle
