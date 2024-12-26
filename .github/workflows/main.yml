@@ -81,6 +81,11 @@ jobs:
         (( $(cabal run Day9Part1) == 6299243228569 ))
         echo "Part 1: OK"
 
+    - name: "Run Day 10"
+      run: |
+        (( $(python3 Part1.py) == 811 ))
+        echo "Part 1: OK"
+
     - name: "Run Day 11"
       run: |
         (( $(cabal run Day11Part1) == 183248 ))
