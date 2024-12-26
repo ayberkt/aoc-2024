@@ -1,6 +1,6 @@
 from collections import deque
 
-file_name = "/Users/ayberkt/Code/aoc-2024/day-10/input.txt"
+file_name = "day-10/input.txt"
 lines     = []
 
 def discover(i, j):
