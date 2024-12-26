@@ -83,7 +83,7 @@ jobs:
 
     - name: "Run Day 10"
       run: |
-        (( $(python3 Part1.py) == 811 ))
+        (( $(python3 day-10/Part1.py) == 811 ))
         echo "Part 1: OK"
 
     - name: "Run Day 11"
